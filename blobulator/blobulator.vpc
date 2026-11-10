@@ -1,0 +1,239 @@
+//-----------------------------------------------------------------------------
+//	BLOBULATOR.VPC
+//
+//	Project Script
+//-----------------------------------------------------------------------------
+
+$Macro SRCDIR		".."
+$Macro OUTLIBDIR	"$SRCDIR\lib\common$PLATSUBDIR"
+
+$include "$SRCDIR\vpc_scripts\source_lib_base.vpc"
+
+
+$Configuration
+{
+	$Compiler
+	{
+		$PreprocessorDefinitions			"$BASE;BLOBULATOR_LIB"
+		$AdditionalIncludeDirectories		"$BASE,$SRCDIR\game\client"
+		$DisableSpecificWarnings			"$BASE;429" [$PS3]
+		$ForceIncludes				"tier0\platform.h" [$WIN32||$POSIX]
+	}
+}
+
+$Configuration "Release"
+{
+	$Compiler [$WIN32]
+	{
+		// TODO (ilya): I don't think buffer security check is necessary
+		$BufferSecurityCheck				"Yes"
+		// TODO (ilya): Should this be set to SSE instead of SSE2?
+		$EnableEnhancedInstructionSet		"Streaming SIMD Extensions 2 (/arch:SSE2)"
+	}
+
+	$Compiler [$X360]
+	{
+		// TODO (ilya): I don't think buffer security check is necessary
+		//$BufferSecurityCheck				"Yes"
+	}
+}
+
+$Project "Blobulator"
+{
+	$Folder	"Util"
+	{
+		$File	"util\Constants.cpp"
+		$File	"util\fasttrunc.cpp"
+		$File	"util\rand.h"
+	}
+
+	$Folder	"Implicit"
+	{
+		$File	"implicit\impparticle.cpp"
+		$File	"implicit\hashparticlecache.cpp"
+		$File	"implicit\hashrenderer.cpp"
+		$File	"implicit\impconsttable_winding.h"
+		$File	"implicit\impconsttable_winding_ccw.h"
+		$File	"implicit\impconsttable_winding_ccw2.h"
+		$File	"implicit\impconsttable_winding_ccw2_tris.h"
+		$File	"implicit\imptiler.cpp"
+		$File	"implicit\imprenderer.cpp"
+		$File	"implicit\infhashparticlecache.cpp"
+		$File	"implicit\infhashrenderer.cpp"
+		$File	"implicit\mcparticlecache.cpp"
+		$File	"implicit\mcrenderer.cpp"
+		$File	"implicit\projectingparticlecache.cpp"
+		$File	"implicit\volumetricparticlecache.cpp"
+		$File	"implicit\sideprojectingparticlecache.cpp"
+		$File	"implicit\sweeprenderer.cpp"
+		$File	"implicit\volumetricsweeprenderer.cpp"
+		$File	"implicit\syncro.cpp"
+		$File	"implicit\userfunctions.cpp"
+	}
+
+	$Folder "BucketImplementation"
+	{
+		$File	"bucket_implementation\cbucket_blob_renderer.cpp"
+	}
+
+	$Folder "SectionImplementation"
+	{
+		$File	"section_implementation\csection_blob_renderer.cpp"
+		$File	"section_implementation\cjob_cache.cpp"
+		$File	"section_implementation\cfragmented_vertex_buffer.cpp"
+		$File	"section_implementation\cthread_data.cpp"
+	}
+
+	$Folder "JobImplementation"
+	{
+		$File	"job_implementation\job_csection_blob_renderer.cpp"
+		$File	"job_implementation\job_cjob_cache.cpp"
+		$File	"job_implementation\job_cfragmented_vertex_buffer.cpp"
+		$File	"job_implementation\job_cthread_data.cpp"
+		$File	"job_implementation\job_csection.cpp"
+		$File	"job_implementation\job_vjob_instance.cpp"				[$PS3]
+		$File	"job_implementation\job_vjob_instance.h"				[$PS3]
+	}
+
+	$Folder "LightBucketImplementation"
+	{
+		$File	"light_bucket_implementation\light_csection_blob_renderer.cpp"
+		$File	"light_bucket_implementation\light_cjob_cache.cpp"
+		$File	"light_bucket_implementation\light_cfragmented_vertex_buffer.cpp"
+		$File	"light_bucket_implementation\light_cthread_data.cpp"
+		$File	"light_bucket_implementation\light_csection.cpp"
+		$File	"light_bucket_implementation\light_vjob_instance.cpp"	[$PS3]
+		$File	"light_bucket_implementation\light_vjob_instance.h"		[$PS3]
+	}
+
+	$Folder	"Interface"
+	{
+		$File	"$SRCDIR\common\blobulator\index3d.h"
+		$File	"$SRCDIR\common\blobulator\point3d.h"
+		$File	"$SRCDIR\common\blobulator\smartarray.h"
+		$File	"$SRCDIR\common\blobulator\timer.h"
+		$File	"$SRCDIR\common\blobulator\iblob_renderer.h"
+
+		$Folder "Util"
+		{
+			$File	"$SRCDIR\common\blobulator\util\fasttrunc.h"
+			$File	"$SRCDIR\common\blobulator\util\constants.h"
+		}
+
+		$Folder	"VertexBuffers"
+		{
+			$File	"$SRCDIR\common\blobulator\vertexbuffers\indextristripvertexbuffer.h"
+			$File	"$SRCDIR\common\blobulator\vertexbuffers\indextrivertexbuffer.h"
+			$File	"$SRCDIR\common\blobulator\vertexbuffers\localbuffer.h"
+			$File	"$SRCDIR\common\blobulator\vertexbuffers\mtindextrivertexbuffer.h"
+			$File	"$SRCDIR\common\blobulator\vertexbuffers\sortedindextrivertexbuffer.h"
+			$File	"$SRCDIR\common\blobulator\vertexbuffers\tristripvertexbuffer.h"
+			$File	"$SRCDIR\common\blobulator\vertexbuffers\vertexbuffer.h"
+		}
+
+		$Folder	"Physics"
+		{
+			$File	"$SRCDIR\common\blobulator\physics\physparticle.h"
+			$File	"$SRCDIR\common\blobulator\physics\physparticlecache.h"
+			$File	"$SRCDIR\common\blobulator\physics\physparticlecache_inl.h"
+			$File	"$SRCDIR\common\blobulator\physics\phystiler.h"
+		}
+
+		$Folder	"Implicit"
+		{
+			$File	"$SRCDIR\common\blobulator\implicit\impparticle.h"
+			$File	"$SRCDIR\common\blobulator\implicit\hashparticlecache.h"
+			$File	"$SRCDIR\common\blobulator\implicit\hashrenderer.h"
+			$File	"$SRCDIR\common\blobulator\implicit\impdefines.h"
+			$File	"$SRCDIR\common\blobulator\implicit\imprenderer.h"
+			$File	"$SRCDIR\common\blobulator\implicit\imptiler.h"
+			$File	"$SRCDIR\common\blobulator\implicit\infhashparticlecache.h"
+			$File	"$SRCDIR\common\blobulator\implicit\infhashrenderer.h"
+			$File	"$SRCDIR\common\blobulator\implicit\mcparticlecache.h"
+			$File	"$SRCDIR\common\blobulator\implicit\mcrenderer.h"
+			$File	"$SRCDIR\common\blobulator\implicit\particlecache.h"
+			$File	"$SRCDIR\common\blobulator\implicit\projectingparticlecache.h"
+			$File	"$SRCDIR\common\blobulator\implicit\volumetricparticlecache.h"
+			$File	"$SRCDIR\common\blobulator\implicit\sideprojectingparticlecache.h"
+			$File	"$SRCDIR\common\blobulator\implicit\sweeprenderer.h"
+			$File	"$SRCDIR\common\blobulator\implicit\volumetricsweeprenderer.h"
+			$File	"$SRCDIR\common\blobulator\implicit\syncro.h"
+			$File	"$SRCDIR\common\blobulator\implicit\userfunctions.h"
+		}
+		
+		$Folder "BucketImplementation"
+		{
+			$File	"$SRCDIR\common\blobulator\bucket_implementation\cbucket.h"
+			$File	"$SRCDIR\common\blobulator\bucket_implementation\cbucket_blob_renderer.h"
+			$File	"$SRCDIR\common\blobulator\bucket_implementation\ccorner_info.h"
+		}
+		
+		$Folder "SectionImplementation"
+		{
+			$File	"$SRCDIR\common\blobulator\section_implementation\cbucket.h"
+			$File	"$SRCDIR\common\blobulator\section_implementation\csection.h"
+			$File	"$SRCDIR\common\blobulator\section_implementation\csection_blob_renderer.h"
+			$File	"$SRCDIR\common\blobulator\section_implementation\ccorner_info.h"
+			$File	"$SRCDIR\common\blobulator\section_implementation\cfragment_info.h"
+			$File	"$SRCDIR\common\blobulator\section_implementation\cfragmented_vertex_buffer.h"
+			$File	"$SRCDIR\common\blobulator\section_implementation\cjob_cache.h"
+			$File	"$SRCDIR\common\blobulator\section_implementation\cthread_data.h"
+		}
+
+		$Folder "JobImplementation"
+		{
+			$File	"$SRCDIR\common\blobulator\job_implementation\job_details.h"
+			$File	"$SRCDIR\common\blobulator\job_implementation\job_cbucket.h"
+			$File	"$SRCDIR\common\blobulator\job_implementation\job_csection.h"
+			$File	"$SRCDIR\common\blobulator\job_implementation\job_csection_blob_renderer.h"
+			$File	"$SRCDIR\common\blobulator\job_implementation\job_ccorner_info.h"
+			$File	"$SRCDIR\common\blobulator\job_implementation\job_cfragment_info.h"
+			$File	"$SRCDIR\common\blobulator\job_implementation\job_cfragmented_vertex_buffer.h"
+			$File	"$SRCDIR\common\blobulator\job_implementation\job_cjob_cache.h"
+			$File	"$SRCDIR\common\blobulator\job_implementation\job_cthread_data.h"
+			$File	"$SRCDIR\common\blobulator\job_implementation\csoftware_cache.h"
+		}
+		
+		$Folder "LightBucketImplementation"
+		{
+			$File	"$SRCDIR\common\blobulator\light_bucket_implementation\light_details.h"
+			$File	"$SRCDIR\common\blobulator\light_bucket_implementation\light_csection.h"
+			$File	"$SRCDIR\common\blobulator\light_bucket_implementation\light_csection_pool.h"
+			$File	"$SRCDIR\common\blobulator\light_bucket_implementation\light_csection_blob_renderer.h"
+			$File	"$SRCDIR\common\blobulator\light_bucket_implementation\light_ccorner_info.h"
+			$File	"$SRCDIR\common\blobulator\light_bucket_implementation\light_cfragment_info.h"
+			$File	"$SRCDIR\common\blobulator\light_bucket_implementation\light_cfragmented_vertex_buffer.h"
+			$File	"$SRCDIR\common\blobulator\light_bucket_implementation\light_cjob_cache.h"
+			$File	"$SRCDIR\common\blobulator\light_bucket_implementation\light_cthread_data.h"
+			$File	"$SRCDIR\common\blobulator\light_bucket_implementation\light_csoftware_cache.h"
+		}
+	}
+
+	$Folder	"Physics"
+	{
+		$File	"physics\physparticle.cpp"
+		$File	"physics\physparticlecache.cpp"
+		$File	"physics\phystiler.cpp"
+	}
+
+	$Folder	"VertexBuffers"
+	{
+		$File	"vertexbuffers\indextristripvertexbuffer.cpp"
+		$File	"vertexbuffers\indextristripvertexbuffer_inl.h"
+		$File	"vertexbuffers\indextrivertexbuffer.cpp"
+		$File	"vertexbuffers\indextrivertexbuffer_inl.h"
+		$File	"vertexbuffers\localbuffer.cpp"
+		$File	"vertexbuffers\mtindextrivertexbuffer.cpp"
+		$File	"vertexbuffers\mtindextrivertexbuffer_inl.h"
+		$File	"vertexbuffers\sortedindextrivertexbuffer.cpp"
+		$File	"vertexbuffers\sortedindextrivertexbuffer_inl.h"
+		$File	"vertexbuffers\tristripvertexbuffer.cpp"
+		$File	"vertexbuffers\tristripvertexbuffer_inl.h"
+		$File	"vertexbuffers\vertexbuffer_inl.h"
+	}
+
+	$Folder	"Common"
+	{
+		$File	"common\blobrender.cpp"
+	}
+}

@@ -1,0 +1,97 @@
+//-----------------------------------------------------------------------------
+//	blobulator_job.VPC
+//
+//	Project Script
+//-----------------------------------------------------------------------------
+
+$macro SRCDIR		".."
+$Macro OUTBINDIR	"$SRCDIR\..\game\bin"
+
+$include "$SRCDIR\vpc_scripts\source_spu_elf_ps3_base.vpc"
+
+$Configuration
+{
+	$GCCCompiler
+	{
+		// specify this to initialize CRT in the job
+		$SPURSUsage				"Job with CRT init (-mspurs-job-initialize)"
+
+		$PreprocessorDefinitions	"$BASE;USE_LSGUARD"				[!$CERT]
+	}
+
+	$GCCLinker
+	{
+		// for the JobQueue functionality, specify this library; do not use $BASE to avoid accidental code bloat due to using not-strictly-necessary functionality
+		$AdditionalDependencies				"$(SCE_PS3_ROOT)\target\spu\lib\pic\libspurs_jq.a $(SCE_PS3_ROOT)\target\spu\lib\pic\libdma.a $(SCE_PS3_ROOT)\target\spu\lib\pic\libatomic.a"
+		$AdditionalDependencies				"$BASE $(SCE_PS3_ROOT)\target\spu\lib\pic\liblsguard.a"		[!$CERT]
+
+		// specify this to initialize CRT in the job
+		$SPURSUsage				"Job with CRT init (-mspurs-job-initialize)"
+	}
+}
+
+$Project "Blobulator_job"
+{
+	$Folder	"Source Files" [$PS3]
+	{
+		$File "util/constants.cpp"
+		
+		$Folder "JobImplementation"				[0]
+		{
+			// SPU specific
+			$File "job_implementation/spu/blobulator_job.cpp"
+			// Code shared between SPU and PPU
+			// All files here should come from the \job_implementation\ folder.
+			// And file name prefixed with "job_"
+			$File "job_implementation/job_cthread_data.cpp"
+			$File "job_implementation/job_csection.cpp"
+			$File "job_implementation/job_cjob_cache.cpp"
+		}
+		
+		$Folder "LightBucketImplementation"		[1]
+		{
+			// SPU specific
+			$File "light_bucket_implementation/spu/light_blobulator_job.cpp"
+			// Code shared between SPU and PPU
+			// All files here should come from the \light_bucket_implementation\ folder.
+			// And file name prefixed with "light_"
+			$File "light_bucket_implementation/light_cthread_data.cpp"
+			$File "light_bucket_implementation/light_csection.cpp"
+			$File "light_bucket_implementation/light_cjob_cache.cpp"
+		}
+	}
+
+	$Folder	"Header Files" [$PS3]
+	{
+		$File "$SRCDIR/common/blobulator/smartarray.h"
+		$File "$SRCDIR/common/blobulator/util/constants.h"
+
+		$Folder "JobImplementation"				[0]
+		{	
+			$File "job_implementation/spu/blobulator_job.h"
+			$File "$SRCDIR/common/blobulator/job_implementation/spu/threadtools.h"
+			$File "$SRCDIR/common/blobulator/job_implementation/job_cthread_data.h"
+			$File "$SRCDIR/common/blobulator/job_implementation/job_csection.h"
+			$File "$SRCDIR/common/blobulator/job_implementation/job_details.h"
+			$File "$SRCDIR/common/blobulator/job_implementation/job_cjob_cache.h"
+			$File "$SRCDIR/common/blobulator/job_implementation/job_cfragment_info.h"
+			$File "$SRCDIR/common/blobulator/job_implementation/job_ccorner_info.h"
+			$File "$SRCDIR/common/blobulator/job_implementation/job_cbucket.h"
+			$File "$SRCDIR/common/blobulator/job_implementation/csoftware_cache.h"
+		}
+
+		$Folder "LightBucketImplementation"		[1]
+		{	
+			$File "job_implementation/spu/blobulator_job.h"
+			$File "$SRCDIR/common/blobulator/light_bucket_implementation/spu/light_threadtools.h"
+			$File "$SRCDIR/common/blobulator/light_bucket_implementation/light_cthread_data.h"
+			$File "$SRCDIR/common/blobulator/light_bucket_implementation/light_csection.h"
+			$File "$SRCDIR/common/blobulator/light_bucket_implementation/light_details.h"
+			$File "$SRCDIR/common/blobulator/light_bucket_implementation/light_cjob_cache.h"
+			$File "$SRCDIR/common/blobulator/light_bucket_implementation/light_cfragment_info.h"
+			$File "$SRCDIR/common/blobulator/light_bucket_implementation/light_ccorner_info.h"
+			$File "$SRCDIR/common/blobulator/light_bucket_implementation/light_cbucket.h"
+			$File "$SRCDIR/common/blobulator/light_bucket_implementation/light_csoftware_cache.h"
+		}
+	}
+}
